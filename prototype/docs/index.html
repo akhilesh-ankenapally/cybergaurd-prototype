@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard – Personal Mobile Defence</title>
+    <meta name="description"
+        content="CyberGuard protects you from WhatsApp scams, phishing, fraud, and cybercrime across all digital platforms.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="api_status.css">
+</head>
+
+<body>
+
+    <div class="phone-frame">
+        <div class="screen-container">
+
+            <!-- ======================== SPLASH SCREEN ======================== -->
+            <div id="splash-screen" class="view active splash-view">
+                <div class="splash-content">
+                    <div class="shield-container animated">
+                        <span class="material-icons-round splash-icon">shield</span>
+                    </div>
+                    <h1 class="splash-title">CyberGuard</h1>
+                    <p class="splash-subtitle">Personal Mobile Defence System</p>
+                    <div class="splash-loader">
+                        <div class="splash-loader-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================== DASHBOARD SCREEN ======================== -->
+            <div id="dashboard-screen" class="view">
+                <div class="app-bar flex-between">
+                    <div>
+                        <p class="app-bar-greeting">Good morning 👋</p>
+                        <h2 class="app-title">Dashboard</h2>
+                    </div>
+                    <button class="icon-button" onclick="navigateTo('settings-screen')">
+                        <span class="material-icons-round">settings</span>
+                    </button>
+                </div>
+
+                <div class="dashboard-content scrollable">
+                    <!-- Score Ring + Shield -->
+                    <div class="score-section">
+                        <div class="score-ring-wrapper">
+                            <svg class="score-ring" viewBox="0 0 100 100">
+                                <circle class="score-ring-bg" cx="50" cy="50" r="45" />
+                                <circle id="score-ring-fill" class="score-ring-fill" cx="50" cy="50" r="45" />
+                            </svg>
+                            <div class="score-center">
+                                <span class="material-icons-round score-shield-icon">shield</span>
+                                <span id="score-value" class="score-number">72</span>
+                                <span class="score-label">/ 100</span>
+                            </div>
+                        </div>
+                        <div class="score-text-block">
+                            <p class="score-heading">Security Score</p>
+                            <p class="score-sub">3 threats need attention</p>
+                        </div>
+                    </div>
+
+                    <!-- Status Card -->
+                    <div class="status-card" id="status-card">
+                        <span class="material-icons-round status-icon warning">warning</span>
+                        <h2 class="status-title warning">Caution</h2>
+                        <p class="status-message">Suspicious WhatsApp messages detected. Review recommended.</p>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions-grid">
+                        <div class="action-card" onclick="startScan()">
+                            <div class="action-icon-bg blue">
+                                <span class="material-icons-round action-icon">qr_code_scanner</span>
+                            </div>
+                            <span class="action-label">Scan</span>
+                        </div>
+                        <div class="action-card" onclick="navigateTo('platforms-screen')">
+                            <div class="action-icon-bg green">
+                                <span class="material-icons-round action-icon">apps</span>
+                            </div>
+                            <span class="action-label">Platforms</span>
+                        </div>
+                        <div class="action-card" onclick="navigateTo('analyze-screen')">
+                            <div class="action-icon-bg purple">
+                                <span class="material-icons-round action-icon">manage_search</span>
+                            </div>
+                            <span class="action-label">Analyze</span>
+                        </div>
+                        <div class="action-card" onclick="navigateTo('report-screen')">
+                            <div class="action-icon-bg red">
+                                <span class="material-icons-round action-icon">report</span>
+                            </div>
+                            <span class="action-label">Report</span>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="recent-threats-header flex-between">
+                        <h3>Recent Threats</h3>
+                        <span class="see-all" onclick="navigateTo('history-screen')">See All</span>
+                    </div>
+
+                    <div class="threat-list" id="dashboard-threats">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================== THREAT ALERT SCREEN ======================== -->
+            <div id="alert-screen" class="view">
+                <div class="app-bar flex-start">
+                    <button class="icon-button" onclick="navigateBack()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
+                    <h2 class="app-title">Threat Details</h2>
+                    <span id="alert-platform-badge" class="platform-badge-header"></span>
+                </div>
+
+                <div class="alert-content scrollable align-center">
+                    <span class="material-icons-round alert-main-icon danger" id="alert-icon">gpp_bad</span>
+                    <h2 class="alert-main-title danger" id="alert-title">DANGER DETECTED</h2>
+
+                    <div class="details-card text-left">
+                        <div class="detail-group">
+                            <div class="detail-label">Source</div>
+                            <div class="detail-value" id="alert-source">WhatsApp: Unknown</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Detected On</div>
+                            <div class="detail-value" id="alert-date">Mar 12, 2026</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Analysis</div>
+                            <div class="detail-value text-danger" id="alert-analysis">Phishing attempt.</div>
+                        </div>
+                        <div class="code-preview">
+                            <p id="alert-preview"></p>
+                        </div>
+                        <div class="alert-tags-section">
+                            <div class="detail-label" style="margin-bottom:8px">Tags</div>
+                            <div id="alert-tags" class="alert-tags-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="spacer"></div>
+
+                    <button id="block-sender-btn" class="btn btn-danger btn-full" onclick="blockSender()">
+                        <span class="material-icons-round btn-icon">block</span>
+                        Delete &amp; Block Sender
+                    </button>
+                    <button class="btn btn-outline btn-full" onclick="markSafe()">
+                        <span class="material-icons-round btn-icon">check_circle</span>
+                        Mark as Safe
+                    </button>
+                    <button class="btn btn-report btn-full" onclick="navigateTo('report-screen')">
+                        <span class="material-icons-round btn-icon">report</span>
+                        Report Cybercrime
+                    </button>
+                </div>
+            </div>
+
+            <!-- ======================== HISTORY SCREEN ======================== -->
+            <div id="history-screen" class="view">
+                <div class="app-bar flex-start">
+                    <button class="icon-button" onclick="navigateBack()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
+                    <h2 class="app-title">Threat History</h2>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="filter-tabs-wrapper">
+                    <div class="filter-tabs scrollable-x">
+                        <button class="filter-tab active" data-filter="all">All</button>
+                        <button class="filter-tab" data-filter="whatsapp">WhatsApp</button>
+                        <button class="filter-tab" data-filter="instagram">Instagram</button>
+                        <button class="filter-tab" data-filter="telegram">Telegram</button>
+                        <button class="filter-tab" data-filter="sms">SMS</button>
+                        <button class="filter-tab" data-filter="email">Email</button>
+                        <button class="filter-tab" data-filter="app">App</button>
+                        <button class="filter-tab" data-filter="network">Network</button>
+                    </div>
+                </div>
+
+                <div class="history-content scrollable">
+                    <div class="threat-list" id="history-threats"></div>
+                </div>
+            </div>
+
+            <!-- ======================== PLATFORM MONITOR SCREEN ======================== -->
+            <div id="platforms-screen" class="view">
+                <div class="app-bar flex-start">
+                    <button class="icon-button" onclick="navigateBack()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
+                    <h2 class="app-title">Platform Monitor</h2>
+                </div>
+
+                <div class="platforms-content scrollable">
+                    <p class="section-intro">Threat activity detected across your connected platforms.</p>
+                    <div class="platform-cards-grid" id="platform-cards">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="platform-info-card">
+                        <span class="material-icons-round platform-info-icon">info</span>
+                        <p>Tap a platform card to view and filter its specific threats in History.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================== LINK/MESSAGE ANALYZER SCREEN ======================== -->
+            <div id="analyze-screen" class="view">
+                <div class="app-bar flex-start">
+                    <button class="icon-button" onclick="navigateBack()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
+                    <h2 class="app-title">Link &amp; Message Analyzer</h2>
+                </div>
+
+                <div class="analyze-content scrollable">
+                    <div class="analyze-hero">
+                        <span class="material-icons-round analyze-hero-icon">manage_search</span>
+                        <p class="analyze-hero-text">Paste a suspicious link or message below to check for phishing,
+                            scams, and malicious content.</p>
+                        <span id="api-status-badge" class="api-badge api-badge-offline">Offline Mode</span>
+                    </div>
+
+                    <div class="analyze-input-area">
+                        <textarea id="analyze-input" class="analyze-textarea"
+                            placeholder="Paste message or link here...&#10;e.g. 'You won ₹50,000! Claim: bit.ly/abc123'"
+                            rows="5"></textarea>
+                        <button id="analyze-btn" class="btn btn-primary btn-full" onclick="analyzeLink()">
+                            <span class="material-icons-round btn-icon">manage_search</span>
+                            Analyze
+                        </button>
+                    </div>
+
+                    <div id="analyze-result" style="display:none;"></div>
+
+                    <div class="analyze-examples">
+                        <div class="example-title">Common Threat Patterns</div>
+                        <div class="example-chip"
+                            onclick="document.getElementById('analyze-input').value='🎉 You won! Claim your free prize at bit.ly/win-now before it expires!'">
+                            🎁 Fake Prize</div>
+                        <div class="example-chip"
+                            onclick="document.getElementById('analyze-input').value='Your bank account will be suspended. Login urgently: secure-bank-verify.com'">
+                            🏦 Bank Phishing</div>
+                        <div class="example-chip"
+                            onclick="document.getElementById('analyze-input').value='Invest ₹10,000 get ₹40,000 guaranteed in 7 days! Limited slots!'">
+                            📈 Crypto Scam</div>
+                        <div class="example-chip"
+                            onclick="document.getElementById('analyze-input').value='Your OTP is 748291. Forward to confirm your new SIM.'">
+                            🔐 OTP Theft</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================== REPORT CYBERCRIME SCREEN ======================== -->
+            <div id="report-screen" class="view">
+                <div class="app-bar flex-start">
+                    <button class="icon-button" onclick="navigateBack()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
+                    <h2 class="app-title">Report Cybercrime</h2>
+                </div>
+
+                <div class="report-content scrollable">
+                    <!-- Helpline Card -->
+                    <div class="helpline-card">
+                        <div class="helpline-left">
+                            <span class="material-icons-round helpline-icon">emergency</span>
+                            <div>
+                                <div class="helpline-title">National Cybercrime Helpline</div>
+                                <div class="helpline-number">1930</div>
+                            </div>
+                        </div>
+                        <div class="helpline-right">
+                            <div class="helpline-badge">24 / 7</div>
+                        </div>
+                    </div>
+                    <p class="helpline-sub">Or file a report at <strong>cybercrime.gov.in</strong></p>
+
+                    <!-- Report Form -->
+                    <div id="report-form-area">
+                        <div class="report-form">
+                            <div class="form-group">
+                                <label class="form-label">Platform</label>
+                                <select id="report-platform" class="form-select">
+                                    <option value="">Select platform...</option>
+                                    <option value="whatsapp">WhatsApp</option>
+                                    <option value="instagram">Instagram</option>
+                                    <option value="telegram">Telegram</option>
+                                    <option value="sms">SMS</option>
+                                    <option value="email">Email</option>
+                                    <option value="facebook">Facebook</option>
+                                    <option value="twitter">X (Twitter)</option>
+                                    <option value="youtube">YouTube</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Crime Type</label>
+                                <select id="report-crime-type" class="form-select">
+                                    <option value="">Select crime type...</option>
+                                    <option value="phishing">Phishing / Fraud Link</option>
+                                    <option value="financial">Financial Fraud / Scam</option>
+                                    <option value="impersonation">Impersonation</option>
+                                    <option value="otp">OTP / SIM Swap Fraud</option>
+                                    <option value="investment">Investment / Crypto Scam</option>
+                                    <option value="romance">Romance Scam</option>
+                                    <option value="harassment">Harassment / Cyberbullying</option>
+                                    <option value="malware">Malware / Ransomware</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Describe the Incident</label>
+                                <textarea id="report-description" class="form-textarea" rows="4"
+                                    placeholder="Describe what happened, including dates, amounts involved, and any links or numbers..."></textarea>
+                            </div>
+
+                            <button id="submit-report-btn" class="btn btn-primary btn-full" onclick="submitReport()">
+                                <span class="material-icons-round btn-icon">send</span>
+                                Submit Report
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Success State -->
+                    <div id="report-success" class="report-success" style="display:none;">
+                        <span class="material-icons-round report-success-icon">check_circle</span>
+                        <h3 class="report-success-title">Report Submitted!</h3>
+                        <p class="report-success-msg">Your report has been logged. Cybercrime authorities will
+                            investigate based on priority. Reference ID: <strong>#CG-2026-7821</strong></p>
+                        <button class="btn btn-outline btn-full" onclick="resetReport()" style="margin-top:24px">
+                            Submit Another Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================== TIPS SCREEN ======================== -->
+            <div id="tips-screen" class="view">
+                <div class="app-bar flex-start">
+                    <button class="icon-button" onclick="navigateBack()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
+                    <h2 class="app-title">Security Tips</h2>
+                </div>
+                <div class="tips-content scrollable">
+                    <p class="tips-intro">Platform-specific advice to protect your digital life.</p>
+                    <div id="tips-list"></div>
+                </div>
+            </div>
+
+            <!-- ======================== SETTINGS SCREEN ======================== -->
+            <div id="settings-screen" class="view">
+                <div class="app-bar flex-between">
+                    <div>
+                        <p class="app-bar-greeting">Manage your</p>
+                        <h2 class="app-title">Settings</h2>
+                    </div>
+                </div>
+                <div class="settings-content scrollable">
+                    <div class="settings-section">Protection</div>
+                    <div class="settings-card">
+                        <div class="setting-item flex-between">
+                            <div class="setting-info flex-start">
+                                <span class="material-icons-round setting-icon">security</span>
+                                <div class="setting-text">
+                                    <div class="setting-title">Real-Time Protection</div>
+                                    <div class="setting-desc">Scan WhatsApp, SMS &amp; links automatically</div>
+                                </div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="setting-divider"></div>
+                        <div class="setting-item flex-between">
+                            <div class="setting-info flex-start">
+                                <span class="material-icons-round setting-icon">notifications_active</span>
+                                <div class="setting-text">
+                                    <div class="setting-title">Threat Alerts</div>
+                                    <div class="setting-desc">Notify on high-risk threats immediately</div>
+                                </div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="setting-divider"></div>
+                        <div class="setting-item flex-between">
+                            <div class="setting-info flex-start">
+                                <span class="material-icons-round setting-icon">chat</span>
+                                <div class="setting-text">
+                                    <div class="setting-title">WhatsApp Monitoring</div>
+                                    <div class="setting-desc">Detect scam links in WhatsApp messages</div>
+                                </div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="setting-divider"></div>
+                        <div class="setting-item flex-between">
+                            <div class="setting-info flex-start">
+                                <span class="material-icons-round setting-icon">photo_camera</span>
+                                <div class="setting-text">
+                                    <div class="setting-title">Social Media Scanning</div>
+                                    <div class="setting-desc">Monitor Instagram, Telegram DMs</div>
+                                </div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">Privacy &amp; Data</div>
+                    <div class="settings-card">
+                        <div class="setting-item flex-between">
+                            <div class="setting-info flex-start">
+                                <span class="material-icons-round setting-icon">privacy_tip</span>
+                                <div class="setting-text">
+                                    <div class="setting-title">Share Anonymous Analytics</div>
+                                    <div class="setting-desc">Help improve CyberGuard threat database</div>
+                                </div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="setting-divider"></div>
+                        <div class="setting-item flex-between">
+                            <div class="setting-info flex-start">
+                                <span class="material-icons-round setting-icon">fingerprint</span>
+                                <div class="setting-text">
+                                    <div class="setting-title">Biometric App Lock</div>
+                                    <div class="setting-desc">Require fingerprint to open CyberGuard</div>
+                                </div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">About</div>
+                    <div class="settings-card">
+                        <div class="setting-item flex-start">
+                            <span class="material-icons-round setting-icon"
+                                style="color:var(--cyber-blue)">shield</span>
+                            <div class="setting-text">
+                                <div class="setting-title">CyberGuard</div>
+                                <div class="setting-desc">Version 2.0.0 · Database updated Mar 12, 2026</div>
+                            </div>
+                        </div>
+                        <div class="setting-divider"></div>
+                        <div class="setting-item flex-start" onclick="navigateTo('tips-screen')" style="cursor:pointer">
+                            <span class="material-icons-round setting-icon">lightbulb</span>
+                            <div class="setting-text">
+                                <div class="setting-title">Security Tips</div>
+                                <div class="setting-desc">Platform-specific cybercrime prevention</div>
+                            </div>
+                            <span class="material-icons-round"
+                                style="color:var(--cyber-text-secondary); margin-left:auto">chevron_right</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end screen-container -->
+
+        <!-- ======================== BOTTOM NAV ======================== -->
+        <nav class="bottom-nav">
+            <button class="bottom-nav-item active" data-screen="dashboard-screen"
+                onclick="navigateTo('dashboard-screen')">
+                <span class="material-icons-round">home</span>
+                <span class="nav-label">Home</span>
+            </button>
+            <button class="bottom-nav-item" data-screen="platforms-screen" onclick="navigateTo('platforms-screen')">
+                <span class="material-icons-round">apps</span>
+                <span class="nav-label">Platforms</span>
+            </button>
+            <button class="bottom-nav-item" data-screen="analyze-screen" onclick="navigateTo('analyze-screen')">
+                <span class="material-icons-round">manage_search</span>
+                <span class="nav-label">Analyze</span>
+            </button>
+            <button class="bottom-nav-item" data-screen="report-screen" onclick="navigateTo('report-screen')">
+                <span class="material-icons-round">report</span>
+                <span class="nav-label">Report</span>
+            </button>
+            <button class="bottom-nav-item" data-screen="settings-screen" onclick="navigateTo('settings-screen')">
+                <span class="material-icons-round">settings</span>
+                <span class="nav-label">Settings</span>
+            </button>
+        </nav>
+
+    </div><!-- end phone-frame -->
+
+    <script src="script.js"></script>
+</body>
+
+</html>
